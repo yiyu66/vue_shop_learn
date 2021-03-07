@@ -10,7 +10,7 @@
     </el-header>
     <!-- 主体部分 -->
     <el-container>
-      <el-aside :width ="isCollapse ? '70px' :'200px'">
+      <el-aside :width="isCollapse ? '70px' : '200px'">
         <div class="toggle-button" @click="collapse">|||</div>
         <!-- 侧边栏菜单 -->
         <el-menu
@@ -20,6 +20,8 @@
           :unique-opened="true"
           :collapse="isCollapse"
           :collapse-transition="false"
+          :router="true"
+          :default-active="activePath"
         >
           <!-- 一级菜单 -->
           <el-submenu
@@ -33,16 +35,20 @@
             </template>
             <!-- 二级菜单 -->
             <el-menu-item
-              :index="subItem.id + ''"
+              :index="'/' + subItem.path"
               v-for="subItem in item.children"
               :key="subItem.id"
+              @click="saveNavState('/' + subItem.path)"
               ><i class="el-icon-menu"></i>
               <span>{{ subItem.authName }}</span>
             </el-menu-item>
           </el-submenu>
         </el-menu>
       </el-aside>
-      <el-main>Main</el-main>
+      <el-main>
+        <!-- 路由占位符 -->
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -59,11 +65,13 @@ export default {
         102: 'el-icon-s-order',
         145: 'el-icon-s-marketing'
       },
-      isCollapse: false
+      isCollapse: false,
+      activePath: '' // 被激活的链接地址
     }
   },
   created () {
     this.getMenuList()
+    this.activePath = window.sessionStorage.getItem('activePath')
   },
   methods: {
     logout () {
@@ -78,6 +86,11 @@ export default {
     },
     collapse () {
       this.isCollapse = !this.isCollapse
+    },
+    // 更新链接的激活状态
+    saveNavState (activePath) {
+      window.sessionStorage.setItem('activePath', activePath)
+      this.activePath = activePath
     }
   }
 }
