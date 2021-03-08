@@ -7,7 +7,6 @@ import axios from 'axios'
 
 axios.defaults.baseURL = 'https://www.liulongbin.top:8888/api/private/v1/' // 配置请求的根目录
 axios.interceptors.request.use(config => {
-  console.log(config)
   config.headers.Authorization = window.sessionStorage.getItem('token')
   return config
 })
