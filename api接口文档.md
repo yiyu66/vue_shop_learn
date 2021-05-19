@@ -1,7 +1,7 @@
 # 1. 电商管理后台 API 接口文档
 
 ## 1.1. API V1 接口说明
-- 我用的地址是这个http://www.ysqorz.top:8888/api/private/v1/
+
 - 接口基准地址：`http://127.0.0.1:8888/api/private/v1/`
 - 服务端已开启 CORS 跨域支持
 - API V1 认证统一使用 Token 认证
