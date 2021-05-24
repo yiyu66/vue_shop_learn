@@ -33,9 +33,9 @@
             </template>
           </el-table-column>
           <el-table-column label="操作">
-            <template>
-              <el-button size="mini" type="primary" icon="el-icon-edit">编辑</el-button>
-              <el-button size="mini" type="danger" icon="el-icon-delete">搜索</el-button>
+            <template slot-scope="scope">
+              <el-button size="mini" type="primary" icon="el-icon-edit" @click="editCateName">编辑</el-button>
+              <el-button size="mini" type="danger" icon="el-icon-delete" @click="deleteCate(scope.row.cat_id)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -52,7 +52,7 @@
       </el-row>
     </el-card>
     <!-- 添加分类对话框 -->
-    <el-dialog title="添加分类" :visible.sync="addCateVisible" width="50%">
+    <el-dialog title="添加分类" :visible.sync="addCateVisible" width="50%" @close="addCateClosed">
       <el-form :model="addCateForm" :rules="addCateFormRules" ref="addCateFormRef" label-width="100px">
         <el-form-item label="分类名称" prop="cat_name">
           <el-input v-model="addCateForm.cat_name"></el-input>
@@ -75,7 +75,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="addCateVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addCateVisible = false">确 定</el-button>
+        <el-button type="primary" @click="addCate">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -98,7 +98,8 @@ export default {
       addCateForm: {
         cat_name: '',
         cat_pid: 0, // 分类父 ID
-        cat_level: 0 // 默认添加一级分类
+        cat_level: 0, // 默认添加一级分类
+        cat_id: 0
       },
       addCateFormRules: {
         cat_name: [
@@ -141,7 +142,47 @@ export default {
       this.parentCateList = res.data
     },
     parentCateChange () {
-      console.log(this.selectedKeys)
+      if (this.selectedKeys.length > 0) {
+        this.addCateForm.cat_pid = this.selectedKeys[this.selectedKeys.length - 1]
+        this.addCateForm.cat_level = this.selectedKeys.length
+      } else {
+        this.addCateForm.cat_pid = 0
+        this.addCateForm.cat_level = 0
+      }
+    },
+    addCate () {
+      this.$refs.addCateFormRef.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.post('categories', this.addCateForm)
+        if (res.meta.status !== 201) {
+          this.$message.error('添加分类失败')
+          return
+        }
+        this.$message.success('添加分类成功')
+        this.getCateList()
+        this.addCateVisible = false
+      })
+    },
+    // 监听对话框关闭
+    addCateClosed () {
+      this.$refs.addCateFormRef.resetFields()
+      this.selectedKeys = []
+      this.addCateForm.cat_pid = 0
+      this.addCateForm.cat_level = 0
+    },
+    editCateName () {
+      // 加一个对话框，输入框，分类名称
+    },
+    async deleteCate (catId) {
+      const { data: res } = await this.$http.delete('categories/' + catId)
+      console.log(this.addCateForm.cat_id)
+      console.log(res)
+      if (res.meta.status !== 200) {
+        this.$message.error('删除失败')
+        return
+      }
+      this.$message.success('删除成功')
+      this.getCateList()
     }
   }
 }
@@ -150,7 +191,7 @@ export default {
 .el-cascader {
   width: 100%;
 }
-.el-cascader-menu{
+.el-cascader-menu {
   height: 400px;
 }
 </style>
