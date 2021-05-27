@@ -5,7 +5,7 @@ import './plugins/element.js'
 import './assets/css/global.css'
 import axios from 'axios'
 
-axios.defaults.baseURL = 'http://www.ysqorz.top:8888/api/private/v1/' // 配置请求的根目录
+axios.defaults.baseURL = 'http://timemeetyou.com:8889/api/private/v1/' // 配置请求的根目录
 axios.interceptors.request.use(config => {
   config.headers.Authorization = window.sessionStorage.getItem('token')
   return config
