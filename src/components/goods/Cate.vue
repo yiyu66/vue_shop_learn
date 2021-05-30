@@ -115,7 +115,7 @@ export default {
     async getCateList () {
       const { data: res } = await this.$http.get('categories', { params: this.querInfo })
       if (res.meta.status !== 200) {
-        return this.$message.error('获取商品分类')
+        return this.$message.error('获取商品分类失败')
       }
 
       this.cateList = res.data.result
